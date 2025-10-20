@@ -198,20 +198,22 @@ const HomeScreen = () => {
     const navigation = useNavigation();
     const [open, setOpen] = useState(false);
     const [addresses, setAddresses] = useState([]);
-    const [category, setCategory] = useState("jewelery");
+    const [category, setCategory] = useState("fragrances");
     const { userId, setUserId } = useContext(UserType);
     const [selectedAddress, setSelectedAddress] = useState("");
     console.log(selectedAddress)
     const [items, setItems] = useState([
-        { label: "Men's clothing", value: "men's clothing" },
-        { label: "jewelery", value: "jewelery" },
-        { label: "electronics", value: "electronics" },
-        { label: "women's clothing", value: "women's clothing" },
+        { label: "fragrances", value: "fragrances" },
+        { label: "clothing", value: "clothing" },
+        { label: "shoes", value: "shoes" },
+        { label: "jewelry", value: "jewelry" },
+        { label: "beauty", value: "beauty" },
+        
     ]);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("https://fakestoreapi.com/products");
+                const response = await axios.get("https://dtthuy1204.github.io/product-data/product.json");
                 setProducts(response.data);
             } catch (error) {
                 console.log("error message", error);
