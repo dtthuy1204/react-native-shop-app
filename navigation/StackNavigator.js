@@ -35,6 +35,20 @@ const StackNavigator = () => {
                                 <AntDesign name="home" size={24} color="black" />
                             ),
                     }} />
+                <Tab.Screen
+                    name="Cart"
+                    component={CartScreen}
+                    options={{
+                        tabBarLabel: 'Cart',
+                        tabBarLabelStyle: { color: "#008E97" },
+                        headerShown: false,
+                        tabBarIcon: ({ focused }) =>
+                            focused ? (
+                                <AntDesign name="shopping-cart" size={24} color="#008E97" />
+                            ) : (
+                                <AntDesign name="shopping-cart" size={24} color="black" />
+                            ),
+                    }} />
 
                 <Tab.Screen
                     name="Profile"
@@ -51,20 +65,7 @@ const StackNavigator = () => {
                             ),
                     }} />
 
-                <Tab.Screen
-                    name="Cart"
-                    component={CartScreen}
-                    options={{
-                        tabBarLabel: 'Cart',
-                        tabBarLabelStyle: { color: "#008E97" },
-                        headerShown: false,
-                        tabBarIcon: ({ focused }) =>
-                            focused ? (
-                                <AntDesign name="shopping-cart" size={24} color="#008E97" />
-                            ) : (
-                                <AntDesign name="shopping-cart" size={24} color="black" />
-                            ),
-                    }} />
+
             </Tab.Navigator>
         );
     }
