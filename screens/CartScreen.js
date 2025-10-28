@@ -19,250 +19,109 @@ import { useNavigation } from "@react-navigation/native";
 
 const CartScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
-  console.log(cart);
   const total = cart
     ?.map((item) => item.price * item.quantity)
     .reduce((curr, prev) => curr + prev, 0);
+
   const dispatch = useDispatch();
-  const increaseQuantity = (item) => {
-    dispatch(incementQuantity(item));
-  };
-  const decreaseQuantity = (item) => {
-    dispatch(decrementQuantity(item));
-  };
-  const deleteItem = (item) => {
-    dispatch(removeFromCart(item));
-  };
   const navigation = useNavigation();
+
+  const increaseQuantity = (item) => dispatch(incementQuantity(item));
+  const decreaseQuantity = (item) => dispatch(decrementQuantity(item));
+  const deleteItem = (item) => dispatch(removeFromCart(item));
+
   return (
-    <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
-      <View
-        style={{
-          backgroundColor: "#00CED1",
-          padding: 10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginHorizontal: 7,
-            gap: 10,
-            backgroundColor: "white",
-            borderRadius: 3,
-            height: 38,
-            flex: 1,
-          }}
-        >
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Pressable style={styles.searchContainer}>
           <Feather
             style={{ paddingLeft: 10 }}
             name="search"
             size={22}
-            color="black"
+            color="#d63384"
           />
-          <TextInput placeholder="Search Amazon.in" />
+          <TextInput
+            placeholder="Search in your cart..."
+            placeholderTextColor="#f5c0d0"
+            style={{ color: "#d63384", flex: 1 }}
+          />
         </Pressable>
-
-        <Feather name="mic" size={24} color="black" />
+        <Feather name="mic" size={24} color="#d63384" style={{ marginLeft: 10 }} />
       </View>
 
-      <View style={{ padding: 10, flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ fontSize: 18, fontWeight: "400" }}>Subtotal : </Text>
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{total}</Text>
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalText}>Subtotal:</Text>
+        <Text style={styles.totalPrice}> ${total.toFixed(2)}</Text>
       </View>
-      <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text>
+      <Text style={styles.emiText}>💖 EMI details available</Text>
 
       <Pressable
         onPress={() => navigation.navigate("Confirm")}
-        style={{
-          backgroundColor: "#FFC72C",
-          padding: 10,
-          borderRadius: 5,
-          justifyContent: "center",
-          alignItems: "center",
-          marginHorizontal: 10,
-          marginTop: 10,
-        }}
+        style={styles.buyButton}
       >
-        <Text>Proceed to Buy ({cart.length}) items</Text>
+        <Text style={styles.buyButtonText}>
+          Proceed to Buy ({cart.length}) items
+        </Text>
       </Pressable>
 
-      <Text
-        style={{
-          height: 1,
-          borderColor: "#D0D0D0",
-          borderWidth: 1,
-          marginTop: 16,
-        }}
-      />
-
-      <View style={{ marginHorizontal: 10 }}>
+      <View style={{ marginHorizontal: 10, marginTop: 15 }}>
         {cart?.map((item, index) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              marginVertical: 10,
-              borderBottomColor: "#F0F0F0",
-              borderWidth: 2,
-              borderLeftWidth: 0,
-              borderTopWidth: 0,
-              borderRightWidth: 0,
-            }}
-            key={index}
-          >
-            <Pressable
-              style={{
-                marginVertical: 10,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <View>
-                <Image
-                  style={{ width: 140, height: 140, resizeMode: "contain" }}
-                  source={{ uri: item?.image }}
-                />
-              </View>
+          <View key={index} style={styles.card}>
+            <View style={styles.itemContainer}>
+              <Image style={styles.productImage} source={{ uri: item?.image }} />
 
-              <View>
-                <Text numberOfLines={3} style={{ width: 150, marginTop: 10 }}>
+              <View style={{ flex: 1, marginLeft: 10 }}>
+                <Text numberOfLines={2} style={styles.productTitle}>
                   {item?.title}
                 </Text>
-                <Text
-                  style={{ fontSize: 20, fontWeight: "bold", marginTop: 6 }}
-                >
-                  {item?.price}
-                </Text>
-                <Image
-                  style={{ width: 30, height: 30, resizeMode: "contain" }}
-                  source={{
-                    uri: "https://assets.stickpng.com/thumbs/5f4924cc68ecc70004ae7065.png",
-                  }}
-                />
-                <Text style={{ color: "green" }}>In Stock</Text>
-                {/* <Text style={{ fontWeight: "500", marginTop: 6 }}>
-                  {item?.rating?.rate} ratings
-                </Text> */}
+                <Text style={styles.productPrice}>${item?.price}</Text>
+                <Text style={styles.stockText}>In Stock 💕</Text>
               </View>
-            </Pressable>
+            </View>
 
-            <Pressable
-              style={{
-                marginTop: 15,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderRadius: 7,
-                }}
-              >
-                {item?.quantity > 1 ? (
+            <View style={styles.actionsRow}>
+              <View style={styles.quantityBox}>
+                {item.quantity > 1 ? (
                   <Pressable
                     onPress={() => decreaseQuantity(item)}
-                    style={{
-                      backgroundColor: "#D8D8D8",
-                      padding: 7,
-                      borderTopLeftRadius: 6,
-                      borderBottomLeftRadius: 6,
-                    }}
+                    style={styles.qtyBtn}
                   >
-                    <AntDesign name="minus" size={24} color="black" />
+                    <AntDesign name="minus" size={20} color="#d63384" />
                   </Pressable>
                 ) : (
                   <Pressable
                     onPress={() => deleteItem(item)}
-                    style={{
-                      backgroundColor: "#D8D8D8",
-                      padding: 7,
-                      borderTopLeftRadius: 6,
-                      borderBottomLeftRadius: 6,
-                    }}
+                    style={styles.qtyBtn}
                   >
-                    <MaterialIcons name="delete" size={24} color="black" />
+                    <MaterialIcons name="delete" size={20} color="#d63384" />
                   </Pressable>
                 )}
 
-                <Pressable
-                  style={{
-                    backgroundColor: "white",
-                    paddingHorizontal: 18,
-                    paddingVertical: 6,
-                  }}
-                >
-                  <Text>{item?.quantity}</Text>
-                </Pressable>
+                <Text style={styles.qtyText}>{item.quantity}</Text>
 
                 <Pressable
                   onPress={() => increaseQuantity(item)}
-                  style={{
-                    backgroundColor: "#D8D8D8",
-                    padding: 7,
-                    borderTopLeftRadius: 6,
-                    borderBottomLeftRadius: 6,
-                  }}
+                  style={styles.qtyBtn}
                 >
-                  <Feather name="plus" size={24} color="black" />
+                  <Feather name="plus" size={20} color="#d63384" />
                 </Pressable>
               </View>
-              <Pressable
-                onPress={() => deleteItem(item)}
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
-                <Text>Delete</Text>
-              </Pressable>
-            </Pressable>
 
-            <Pressable
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: 15,
-              }}
-            >
-              <Pressable
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
-                <Text>Save For Later</Text>
+              <Pressable onPress={() => deleteItem(item)} style={styles.deleteBtn}>
+                <Text style={{ color: "#d63384", fontWeight: "600" }}>
+                  Delete
+                </Text>
               </Pressable>
+            </View>
 
-              <Pressable
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
-                <Text>See More Like this</Text>
+            <View style={styles.bottomRow}>
+              <Pressable style={styles.secondaryBtn}>
+                <Text style={styles.secondaryText}>Save For Later</Text>
               </Pressable>
-            </Pressable>
+              <Pressable style={styles.secondaryBtn}>
+                <Text style={styles.secondaryText}>See More Like This</Text>
+              </Pressable>
+            </View>
           </View>
         ))}
       </View>
@@ -272,4 +131,139 @@ const CartScreen = () => {
 
 export default CartScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 55,
+    flex: 1,
+    backgroundColor: "#FFF0F5",
+  },
+  header: {
+    backgroundColor: "#f8bbd0",
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 15,
+    height: 40,
+    flex: 1,
+    shadowColor: "#f8bbd0",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  totalContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    marginTop: 10,
+  },
+  totalText: { fontSize: 18, color: "#d63384", fontWeight: "500" },
+  totalPrice: { fontSize: 20, fontWeight: "bold", color: "#d63384" },
+  emiText: { marginLeft: 15, color: "#a84e74", marginTop: 4 },
+  buyButton: {
+    backgroundColor: "#d63384",
+    padding: 14,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 15,
+    marginTop: 15,
+    shadowColor: "#d63384",
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  buyButtonText: {
+    fontWeight: "700",
+    color: "white",
+    fontSize: 16,
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 12,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#f8bbd0",
+    shadowColor: "#d63384",
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  productImage: {
+    width: 110,
+    height: 110,
+    borderRadius: 12,
+    resizeMode: "contain",
+  },
+  productTitle: {
+    fontSize: 15,
+    color: "#d63384",
+    fontWeight: "600",
+  },
+  productPrice: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#d63384",
+    marginTop: 4,
+  },
+  stockText: { color: "green", marginTop: 4 },
+  actionsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 12,
+  },
+  quantityBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffe4ec",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#f5b7c5",
+  },
+  qtyBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  qtyText: {
+    paddingHorizontal: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#d63384",
+  },
+  deleteBtn: {
+    borderWidth: 1,
+    borderColor: "#f8bbd0",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: "#fff0f5",
+  },
+  bottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginTop: 10,
+  },
+  secondaryBtn: {
+    borderWidth: 1,
+    borderColor: "#f8bbd0",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "#ffd6e8",
+  },
+  secondaryText: {
+    color: "#d63384",
+    fontWeight: "600",
+  },
+});

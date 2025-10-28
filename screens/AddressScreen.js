@@ -6,6 +6,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  Platform,
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -13,6 +14,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { jwtDecode } from "jwt-decode";
 import { UserType } from "../UserContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddressScreen = () => {
   const navigation = useNavigation();
@@ -25,7 +27,6 @@ const AddressScreen = () => {
   const { userId, setUserId } = useContext(UserType);
   const [loading, setLoading] = useState(true);
 
-  // Lấy userId từ token khi vào màn hình
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -44,16 +45,14 @@ const AddressScreen = () => {
     fetchUser();
   }, []);
 
-  // Hiển thị màn hình loading nếu user chưa sẵn sàng
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading user data...</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={{ color: "#d63384", fontSize: 16 }}>Loading user data...</Text>
       </View>
     );
   }
 
-  //  Hàm xử lý thêm địa chỉ
   const handleAddAddress = async () => {
     try {
       if (!userId) {
@@ -61,20 +60,12 @@ const AddressScreen = () => {
         return;
       }
 
-      // Kiểm tra dữ liệu nhập vào
       if (!name || !mobileNo || !houseNo || !street || !postalCode) {
         Alert.alert("Validation error", "Please fill in all required fields");
         return;
       }
 
-      const address = {
-        name,
-        mobileNo,
-        houseNo,
-        street,
-        landmark,
-        postalCode,
-      };
+      const address = { name, mobileNo, houseNo, street, landmark, postalCode };
 
       const response = await axios.post("http://192.168.1.204:3001/addresses", {
         userId,
@@ -83,8 +74,6 @@ const AddressScreen = () => {
 
       if (response.status === 200) {
         Alert.alert("Success", "Address added successfully");
-
-        // Reset form
         setName("");
         setMobileNo("");
         setHouseNo("");
@@ -92,135 +81,166 @@ const AddressScreen = () => {
         setLandmark("");
         setPostalCode("");
 
-        // Quay lại sau 0.5s
-        setTimeout(() => {
-          navigation.goBack();
-        }, 500);
+        setTimeout(() => navigation.goBack(), 500);
       } else {
         Alert.alert("Error", "Unexpected server response");
-        console.log("Unexpected response:", response);
       }
     } catch (error) {
-      console.log("Error adding address:", error?.response || error);
-      const message =
-        error?.response?.data?.message ||
-        "Failed to add address. Please try again.";
-      Alert.alert("Error", message);
+      console.log("Error adding address:", error);
+      Alert.alert("Error", "Failed to add address. Please try again.");
     }
   };
 
-  //  Giao diện
   return (
-    <ScrollView style={{ marginTop: 50 }}>
-      <View style={{ height: 50, backgroundColor: "#00CED1" }} />
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "#FFF0F5",
+        paddingTop: Platform.OS === "android" ? 40 : 0,
+      }}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 20 }}
+      >
+        {/* Header */}
+        <Text style={styles.headerText}>🏠 Add a New Address</Text>
 
-      <View style={{ padding: 10 }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold" }}>
-          Add a new Address
-        </Text>
-
+        {/* Country */}
         <TextInput
-          placeholderTextColor={"black"}
-          placeholder="VietNam"
+          placeholder="Viet Nam"
+          placeholderTextColor="#d48fb0"
           style={styles.input}
         />
 
+        {/* Name */}
         <View style={{ marginVertical: 10 }}>
-          <Text style={styles.label}>Name</Text>
+          <Text style={styles.label}>Full Name</Text>
           <TextInput
             value={name}
-            onChangeText={(text) => setName(text)}
-            placeholderTextColor={"black"}
-            style={styles.input}
+            onChangeText={setName}
             placeholder="Enter your name"
+            placeholderTextColor="#f2a4be"
+            style={styles.input}
           />
         </View>
 
+        {/* Phone */}
         <View>
           <Text style={styles.label}>Phone Number</Text>
           <TextInput
             value={mobileNo}
-            onChangeText={(text) => setMobileNo(text)}
-            placeholderTextColor={"black"}
-            style={styles.input}
+            onChangeText={setMobileNo}
             placeholder="Enter phone number"
+            placeholderTextColor="#f2a4be"
+            style={styles.input}
             keyboardType="phone-pad"
           />
         </View>
 
+        {/* House No */}
         <View style={{ marginVertical: 10 }}>
-          <Text style={styles.label}>Flat, House No, Building, Company</Text>
+          <Text style={styles.label}>Flat / House No. / Building</Text>
           <TextInput
             value={houseNo}
-            onChangeText={(text) => setHouseNo(text)}
-            placeholderTextColor={"black"}
+            onChangeText={setHouseNo}
+            placeholder="Enter house or building info"
+            placeholderTextColor="#f2a4be"
             style={styles.input}
-            placeholder="Enter address details"
           />
         </View>
 
+        {/* Street */}
         <View>
-          <Text style={styles.label}>Area, Street, Sector, Village</Text>
+          <Text style={styles.label}>Street / Area / Village</Text>
           <TextInput
             value={street}
-            onChangeText={(text) => setStreet(text)}
-            placeholderTextColor={"black"}
-            style={styles.input}
+            onChangeText={setStreet}
             placeholder="Enter street"
+            placeholderTextColor="#f2a4be"
+            style={styles.input}
           />
         </View>
 
+        {/* Landmark */}
         <View style={{ marginVertical: 10 }}>
-          <Text style={styles.label}>Landmark</Text>
+          <Text style={styles.label}>Landmark (optional)</Text>
           <TextInput
             value={landmark}
-            onChangeText={(text) => setLandmark(text)}
-            placeholderTextColor={"black"}
+            onChangeText={setLandmark}
+            placeholder="Near school, mall, etc."
+            placeholderTextColor="#f2a4be"
             style={styles.input}
-            placeholder="Landmark (optional)"
           />
         </View>
 
+        {/* Postal Code */}
         <View>
-          <Text style={styles.label}>Pin-Code</Text>
+          <Text style={styles.label}>Postal Code</Text>
           <TextInput
             value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
-            placeholderTextColor={"black"}
+            onChangeText={setPostalCode}
+            placeholder="Enter postal code"
+            placeholderTextColor="#f2a4be"
             style={styles.input}
-            placeholder="Enter Pin-Code"
             keyboardType="numeric"
           />
         </View>
 
+        {/* Button */}
         <Pressable onPress={handleAddAddress} style={styles.button}>
-          <Text style={{ fontWeight: "bold" }}>Add Address</Text>
+          <Text style={styles.buttonText}>💖 Add Address</Text>
         </Pressable>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default AddressScreen;
 
 const styles = StyleSheet.create({
-  input: {
-    padding: 10,
-    borderColor: "#D0D0D0",
-    borderWidth: 1,
-    marginTop: 10,
-    borderRadius: 5,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFF0F5",
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#d63384",
+    textAlign: "center",
+    marginBottom: 20,
   },
   label: {
     fontSize: 15,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#d63384",
+    marginBottom: 5,
+  },
+  input: {
+    padding: 12,
+    borderColor: "#f8bbd0",
+    borderWidth: 1.5,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    color: "#d63384",
   },
   button: {
-    backgroundColor: "#FFC72C",
-    padding: 19,
-    borderRadius: 6,
+    backgroundColor: "#d63384",
+    paddingVertical: 15,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 25,
+    shadowColor: "#d63384",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
   },
 });

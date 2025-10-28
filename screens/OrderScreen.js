@@ -1,12 +1,30 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 const OrderScreen = () => {
   const navigation = useNavigation();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {
+    // Hiệu ứng mờ + phóng to khi vào màn hình
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 60,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Tự động chuyển về Main sau 3s
     const timer = setTimeout(() => {
       navigation.replace("Main");
     }, 3000);
@@ -16,16 +34,41 @@ const OrderScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={{ uri: "https://cdn-icons-png.flaticon.com/512/845/845646.png" }}
-        style={styles.image}
+      <Animated.Image
+        source={{
+          uri: "https://cdn-icons-png.flaticon.com/512/845/845646.png",
+        }}
+        style={[
+          styles.image,
+          {
+            opacity: fadeAnim,
+            transform: [{ scale: scaleAnim }],
+          },
+        ]}
       />
 
-      <Text style={styles.text}>Your Order Has Been Received</Text>
+      <Animated.Text style={[styles.text, { opacity: fadeAnim }]}>
+        🎉 Your Order Has Been Received 💕
+      </Animated.Text>
 
-      <Image
-        source={{ uri: "https://cdn-icons-png.flaticon.com/512/190/190411.png" }}
-        style={styles.sparkle}
+      <Animated.Image
+        source={{
+          uri: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
+        }}
+        style={[
+          styles.sparkle,
+          {
+            opacity: fadeAnim,
+            transform: [
+              {
+                scale: scaleAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.8, 1],
+                }),
+              },
+            ],
+          },
+        ]}
       />
     </SafeAreaView>
   );
@@ -35,24 +78,27 @@ export default OrderScreen;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
     flex: 1,
+    backgroundColor: "#FFF0F5", 
     alignItems: "center",
     justifyContent: "center",
   },
   image: {
     height: 150,
     width: 150,
-    marginBottom: 20,
+    marginBottom: 25,
   },
   text: {
-    fontSize: 19,
-    fontWeight: "600",
+    fontSize: 20,
+    fontWeight: "700",
     textAlign: "center",
+    color: "#d63384", 
+    marginHorizontal: 20,
   },
   sparkle: {
     height: 80,
     width: 80,
-    marginTop: 20,
+    marginTop: 25,
+    tintColor: "#f8bbd0", 
   },
 });

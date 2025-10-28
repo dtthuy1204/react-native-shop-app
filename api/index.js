@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const otpStore = {};
 
 const app = express();
 const port = 3001;
@@ -252,6 +253,7 @@ app.post("/orders", async (req, res) => {
       totalPrice,
       shippingAddress,
       paymentMethod,
+      status: "Pending",
     });
 
     await newOrder.save();
@@ -299,5 +301,124 @@ app.get("/orders/:userId",async(req,res) => {
     res.status(200).json({ orders });
   } catch(error){
     res.status(500).json({ message: "Error"});
+  }
+});
+
+// Request password reset OTP
+app.post("/request-password-reset", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6 chữ số
+    otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 }; // hết hạn sau 5 phút
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "dinhthuy2004vk@gmail.com",
+        pass: "oxbd xvvi ipfb mkgg",
+      },
+    });
+
+    await transporter.sendMail({
+      from: "Shop Lovely",
+      to: email,
+      subject: "Password Reset Code 💌",
+      text: `Your OTP code is ${otp}. It will expire in 5 minutes.`,
+    });
+
+    res.status(200).json({ message: "OTP sent to your email" });
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    res.status(500).json({ message: "Failed to send OTP" });
+  }
+});
+
+app.post("/verify-otp-reset", async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!otpStore[email])
+      return res.status(400).json({ message: "No OTP request found" });
+
+    const { otp: storedOtp, expiresAt } = otpStore[email];
+    if (Date.now() > expiresAt)
+      return res.status(400).json({ message: "OTP expired" });
+
+    if (String(otp) !== String(storedOtp))
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.password = newPassword;
+    await user.save();
+
+    delete otpStore[email];
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).json({ message: "Failed to reset password" });
+  }
+});
+
+// ===== ADMIN API =====
+
+// Get all users (for admin)
+app.get("/admin/users", async (req, res) => {
+  try {
+    const users = await User.find({}, "name email verified");
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Get all orders (for admin)
+app.get("/admin/orders", async (req, res) => {
+  try {
+    const orders = await Order.find().populate("user");
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Confirm order & send email
+app.put("/admin/orders/:id/confirm", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).populate("user");
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    order.status = "Confirmed";
+    await order.save();
+
+    // Gửi email thông báo
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "dinhthuy2004vk@gmail.com",
+        pass: "oxbd xvvi ipfb mkgg",
+      },
+    });
+
+    const mailOptions = {
+      from: "Shop Lovely",
+      to: order.user.email,
+      subject: "Order Confirmed 💖",
+      text: `Hello ${order.user.name}, your order #${order._id} has been confirmed! Thank you for shopping with us 💕`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Order confirmed and email sent" });
+  } catch (error) {
+    console.error("Error confirming order:", error);
+    res.status(500).json({ message: "Failed to confirm order" });
   }
 });
