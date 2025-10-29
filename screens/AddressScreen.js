@@ -64,10 +64,9 @@ const AddressScreen = () => {
         Alert.alert("Validation error", "Please fill in all required fields");
         return;
       }
-
+//const response = await axios.post("http://192.168.1.204:3001/addresses",{
       const address = { name, mobileNo, houseNo, street, landmark, postalCode };
-
-      const response = await axios.post("http://192.168.1.204:3001/addresses", {
+      const response = await axios.post("http://192.168.137.1:3001/addresses", {
         userId,
         address,
       });

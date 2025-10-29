@@ -16,7 +16,8 @@ import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserType } from "../UserContext";
 
-const BASE_URL = "http://192.168.1.204:3001";
+const BASE_URL = "http://192.168.137.1:3001";
+//const BASE_URL = "http://192.168.1.204:3001";
 
 const AccountScreen = () => {
   const { userId } = useContext(UserType);
@@ -127,7 +128,6 @@ const AccountScreen = () => {
             <Text style={styles.userEmail}>{user?.email}</Text>
           </View>
 
-          {/* Reset password form */}
           {showReset ? (
             <View style={styles.formContainer}>
               <Text style={styles.label}>Reset Password</Text>
@@ -145,7 +145,7 @@ const AccountScreen = () => {
                   style={[styles.button, styles.saveBtn]}
                   onPress={handleRequestOTP}
                 >
-                  <Text style={styles.buttonText}>📨 Send OTP</Text>
+                  <Text style={styles.buttonText}> Send OTP</Text>
                 </Pressable>
               ) : (
                 <>
@@ -167,7 +167,7 @@ const AccountScreen = () => {
                     style={[styles.button, styles.saveBtn]}
                     onPress={handleVerifyOTP}
                   >
-                    <Text style={styles.buttonText}>🔒 Confirm Reset</Text>
+                    <Text style={styles.buttonText}> Confirm Reset</Text>
                   </Pressable>
                 </>
               )}
@@ -186,7 +186,7 @@ const AccountScreen = () => {
             </View>
           ) : isEditing ? (
             <View style={styles.formContainer}>
-              <Text style={styles.label}>Full Name</Text>
+              <Text style={styles.label}>User Name</Text>
               <TextInput
                 style={styles.input}
                 value={formData.name}
@@ -208,7 +208,7 @@ const AccountScreen = () => {
                   style={[styles.button, styles.saveBtn]}
                   onPress={handleSave}
                 >
-                  <Text style={styles.buttonText}>💾 Save</Text>
+                  <Text style={styles.buttonText}> Save</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.button, styles.cancelBtn]}
@@ -246,7 +246,7 @@ const AccountScreen = () => {
                 style={[styles.button, styles.editBtn]}
                 onPress={() => setIsEditing(true)}
               >
-                <Text style={styles.buttonText}>✏️ Edit Information</Text>
+                <Text style={styles.buttonText}> Edit Information</Text>
               </Pressable>
 
               <Pressable
@@ -256,7 +256,7 @@ const AccountScreen = () => {
                   setShowReset(true);
                 }}
               >
-                <Text style={styles.buttonText}>🔐 Reset Password</Text>
+                <Text style={styles.buttonText}> Reset Password</Text>
               </Pressable>
             </View>
           )}

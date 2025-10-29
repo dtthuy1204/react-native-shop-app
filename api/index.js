@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -15,10 +16,9 @@ app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
 
-mongoose.connect("mongodb+srv://dthuyy:dthuyy@cluster0.5jp0vvi.mongodb.net/", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(() => {
+mongoose.connect(process.env.MONGO_URI, {
+      dbName: process.env.DB_NAME,
+    }).then(() => {
     console.log("Connected to MongoDB");
 }).catch((err) => {
     console.log("Error connecting to MongoDB:", err);
@@ -44,7 +44,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     });
     //compose the email message
     const mailOptions = {
-        from: "amazon.com",
+        from: "chip's xink shop",
         to: email,
         subject: "Email Verification",
         text: `Click the link below to verify your email: http://${process.env.HOST_IP || '192.168.1.204'}:${port}/verify/${verificationToken}`,

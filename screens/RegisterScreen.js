@@ -22,8 +22,8 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const navigation = useNavigation();
-  const BASE_URL = "http://192.168.1.204:3001";
-
+  //const BASE_URL = "http://192.168.1.204:3001";
+  const BASE_URL = "http://192.168.137.1:3001";
   const handleRegister = async () => {
     if (!name || !email || !password) {
       Alert.alert("Validation error", "Please fill in all fields 🌷");

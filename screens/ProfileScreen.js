@@ -16,7 +16,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../UserContext";
 
-const BASE_URL = "http://192.168.1.204:3001";
+//const BASE_URL = "http://192.168.1.204:3001";
+const BASE_URL = "http://192.168.137.1:3001";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
