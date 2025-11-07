@@ -17,15 +17,15 @@ app.use(bodyParser.json());
 const jwt = require("jsonwebtoken");
 
 mongoose.connect(process.env.MONGO_URI, {
-      dbName: process.env.DB_NAME,
-    }).then(() => {
-    console.log("Connected to MongoDB");
+  dbName: process.env.DB_NAME,
+}).then(() => {
+  console.log("Connected to MongoDB");
 }).catch((err) => {
-    console.log("Error connecting to MongoDB:", err);
+  console.log("Error connecting to MongoDB:", err);
 });
 
 app.listen(port, "0.0.0.0", () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
 
 const User = require("./models/user");
@@ -33,103 +33,103 @@ const Order = require("./models/order");
 
 //function to send Verification email to the user
 const sendVerificationEmail = async (email, verificationToken) => {
-    //create a nodemailer transport
-    const transporter = nodemailer.createTransport({
-        //configure the mail server
-        service: "gmail",
-        auth: {
-            user: "dinhthuy2004vk@gmail.com",
-            pass: "oxbd xvvi ipfb mkgg",
-        },
-    });
-    //compose the email message
-    const mailOptions = {
-        from: "chip's xink shop",
-        to: email,
-        subject: "Email Verification",
-        text: `Click the link below to verify your email: http://${process.env.HOST_IP || '192.168.1.204'}:${port}/verify/${verificationToken}`,
-    };
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "dinhthuy2004vk@gmail.com",
+      pass: "oxbd xvvi ipfb mkgg",
+    },
+  });
+  const mailOptions = {
+    from: "Chip's Xink",
+    to: email,
+    subject: "Email Verification",
+    text: `Hello,
 
-    //send the email
-    try {
-        await transporter.sendMail(mailOptions)
-    } catch (error) {
-        console.log("Error sending verification email", error);
-    }
+Thank you for signing up at Chip's Xink 🌸
+
+To complete your account creation and start shopping, please click on the link below to verify your email address:
+
+🔗 [Verify now](http://${process.env.HOST_IP || '192.168.1.204'}:${port}/verify/${verificationToken})
+
+This link will expire in 5 minutes for security reasons.
+
+If you do not complete this request, please ignore this email.
+
+Best regards,
+Chip's Xink Team
+💕 Fashion – Beauty – Shine every day 💕`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions)
+  } catch (error) {
+    console.log("Error sending verification email", error);
+  }
 };
 //endpoint to register in the app
 app.post("/register", async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-        // kiểm tra trống
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // kiểm tra định dạng email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    // kiểm tra độ dài mật khẩu
     if (password.length < 6) {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-        //check if email is already registered
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: "Email already exists" });
-        }
-
-        //create a new User
-        const newUser = new User({
-            name,
-            email,
-            password,
-        });
-
-
-        //generate and store the verification token
-        newUser.verificationToken = crypto.randomBytes(20).toString("hex");
-
-        //save the user to the db
-        await newUser.save();
-
-        //send the verification email to the user
-        await sendVerificationEmail(newUser.email, newUser.verificationToken);
-        res.status(200).json({ message: "Registration successful. Please check your email for verification." });
-        console.log("New user created:", newUser.email, "token:", newUser.verificationToken);
-    } catch (error) {
-        console.log("Error registering user", error);
-        res.status(500).json({ message: "Registration failed" });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
     }
+
+    const newUser = new User({
+      name,
+      email,
+      password,
+    });
+
+
+    newUser.verificationToken = crypto.randomBytes(20).toString("hex");
+
+    await newUser.save();
+
+    await sendVerificationEmail(newUser.email, newUser.verificationToken);
+    res.status(200).json({ message: "Registration successful. Please check your email for verification." });
+    console.log("New user created:", newUser.email, "token:", newUser.verificationToken);
+  } catch (error) {
+    console.log("Error registering user", error);
+    res.status(500).json({ message: "Registration failed" });
+  }
 });
 
 //endpoint to verify the email
 app.get("/verify/:token", async (req, res) => {
-    try {
-        const token = req.params.token;
+  try {
+    const token = req.params.token;
 
-        //find the user with the given verification token
-        const user = await User.findOne({ verificationToken: token });
+    const user = await User.findOne({ verificationToken: token });
 
-        if (!user) {
-            return res.status(400).json({ message: "Invalid verification token" });
-        }
-
-        //Mark the user as verified
-        user.verified = true;
-        user.verificationToken = undefined;
-
-        await user.save();
-
-        res.status(200).json({ message: "Email verified successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Email Verification failed" });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid verification token" });
     }
+
+    user.verified = true;
+    user.verificationToken = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Email Verification failed" });
+  }
 });
 // const generateSecretKey = () => {
 //     const secretKey = crypto.randomBytes(32).toString("hex");
@@ -139,33 +139,31 @@ const secretKey = "my_secret_key_123";
 
 //endpoint to login in the user
 app.post("/login", async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ message: "Email and password required" });
-        }
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(401).json({ message: "Invalid email or password" });
-        }
-
-        // check verification
-        if (!user.verified) {
-            return res.status(403).json({ message: "Please verify your email before logging in" });
-        }
-
-        // check password (currently plaintext)
-        if (user.password !== password) {
-            return res.status(401).json({ message: "Invalid email or password" });
-        }
-
-        const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: "7d" });
-        res.status(200).json({ token });
-    } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ message: "Login failed" });
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
     }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    if (!user.verified) {
+      return res.status(403).json({ message: "Please verify your email before logging in" });
+    }
+
+    if (user.password !== password) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: "7d" });
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Login failed" });
+  }
 });
 
 
@@ -214,12 +212,10 @@ app.post("/orders", async (req, res) => {
 
     const { userId, cartItems, totalPrice, shippingAddress, paymentMethod } = req.body;
 
-    // Kiểm tra dữ liệu đầu vào
     if (!userId || !cartItems || !totalPrice || !shippingAddress || !paymentMethod) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Ép kiểu userId sang ObjectId
     let user;
     try {
       user = await User.findById(new mongoose.Types.ObjectId(userId));
@@ -228,13 +224,11 @@ app.post("/orders", async (req, res) => {
       return res.status(400).json({ message: "Invalid userId format" });
     }
 
-    // Kiểm tra user tồn tại
     if (!user) {
       console.error("User not found with ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Tạo danh sách sản phẩm từ giỏ hàng
     const products = cartItems.map((item) => ({
       name: item?.title || item?.name || "Unknown Product",
       quantity: item.quantity || 1,
@@ -246,7 +240,6 @@ app.post("/orders", async (req, res) => {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
-    // Tạo đơn hàng mới
     const newOrder = new Order({
       user: user._id,
       products,
@@ -288,19 +281,19 @@ app.get("/profile/:userId", async (req, res) => {
   }
 });
 
-app.get("/orders/:userId",async(req,res) => {
-  try{
+app.get("/orders/:userId", async (req, res) => {
+  try {
     const userId = req.params.userId;
 
-    const orders = await Order.find({user:userId}).populate("user");
+    const orders = await Order.find({ user: userId }).populate("user");
 
-    if(!orders || orders.length === 0){
-      return res.status(404).json({message:"No orders found for this user"})
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user" })
     }
 
     res.status(200).json({ orders });
-  } catch(error){
-    res.status(500).json({ message: "Error"});
+  } catch (error) {
+    res.status(500).json({ message: "Error" });
   }
 });
 
@@ -323,10 +316,23 @@ app.post("/request-password-reset", async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: "Shop Lovely",
+      from: "Chip's Xink",
       to: email,
-      subject: "Password Reset Code 💌",
-      text: `Your OTP code is ${otp}. It will expire in 5 minutes.`,
+      subject: "Password Reset Code",
+      text: `Hello,
+
+Thank you for using Chip's Xink service💖
+
+Your OTP is:
+${otp}
+
+This code is valid for 5 minutes. Please do not share this code with anyone to ensure the security of your account.
+
+If you do not request this code, please ignore this email.
+
+Best regards,
+Chip's Xink Team
+✨ Fashion – Beauty – Shine every day ✨`,
     });
 
     res.status(200).json({ message: "OTP sent to your email" });
@@ -365,8 +371,6 @@ app.post("/verify-otp-reset", async (req, res) => {
   }
 });
 
-// ===== ADMIN API =====
-
 // Get all users (for admin)
 app.get("/admin/users", async (req, res) => {
   try {
@@ -398,7 +402,6 @@ app.put("/admin/orders/:id/confirm", async (req, res) => {
     order.status = "Confirmed";
     await order.save();
 
-    // Gửi email thông báo
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -408,10 +411,22 @@ app.put("/admin/orders/:id/confirm", async (req, res) => {
     });
 
     const mailOptions = {
-      from: "Shop Lovely",
+      from: "Chip's Xink",
       to: order.user.email,
-      subject: "Order Confirmed 💖",
-      text: `Hello ${order.user.name}, your order #${order._id} has been confirmed! Thank you for shopping with us 💕`,
+      subject: "Order Confirmed",
+      text: `Hello ${order.user.name},
+
+💕 Your order #${order._id} has been successfully confirmed!
+
+Thank you for trusting and shopping with Chip's Xink 🌸
+
+We will notify you as soon as the order is packed and sent to you.
+
+If you have any questions, please contact us via email or fanpage for the fastest support.
+
+Best regards,
+Chip's Xink Team
+✨ Fashion - Beauty - Shine with you ✨`,
     };
 
     await transporter.sendMail(mailOptions);
