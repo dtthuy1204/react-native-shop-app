@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { cleanCart } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
 
-//const BASE_URL = "http://192.168.1.204:3001";
-const BASE_URL = "http://192.168.137.1:3001";
+const BASE_URL = "http://192.168.1.204:3001";
+//const BASE_URL = "http://192.168.137.1:3001";
 const ConfirmationScreen = () => {
   const steps = [
     { title: "Address", content: "Address Form" },

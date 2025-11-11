@@ -63,7 +63,7 @@ const ProductItem = ({ item }) => {
             addedToCart ? styles.textAdded : styles.textDefault,
           ]}
         >
-          {addedToCart ? "💗 Added!" : "Add to Cart"}
+          {addedToCart ? "Added!" : "Add to Cart"}
         </Text>
       </Pressable>
     </Pressable>

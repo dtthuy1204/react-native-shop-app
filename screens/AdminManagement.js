@@ -13,8 +13,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 
-//const BASE_URL = "http://192.168.1.204:3001";
-const BASE_URL = "http://192.168.137.1:3001";
+const BASE_URL = "http://192.168.1.204:3001";
+//const BASE_URL = "http://192.168.137.1:3001";
 const screenWidth = Dimensions.get("window").width;
 
 const AdminManagement = () => {

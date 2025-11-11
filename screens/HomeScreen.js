@@ -149,6 +149,9 @@ const HomeScreen = () => {
     const flatListRef = useRef(null);
     const scrollRef = useRef(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const productsSectionRef = useRef(null);
+    const [productsSectionY, setProductsSectionY] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -183,16 +186,31 @@ const HomeScreen = () => {
                     backgroundColor: "#FFF0F5",
                 }}
             >
-                <ScrollView ref={scrollRef}>
-                    {/* Thanh tìm kiếm */}
+                {/* Thanh tìm kiếm */}
                     <View style={styles.searchBar}>
                         <Pressable style={styles.searchInput}>
                             <Feather style={{ paddingLeft: 10 }} name="search" size={22} color="#d63384" />
-                            <TextInput placeholder="Search your favorite products..." placeholderTextColor="#d48fb0" />
+                            <TextInput
+                                placeholder="Search your favorite products..."
+                                placeholderTextColor="#d48fb0"
+                                value={searchQuery}
+                                onChangeText={(text) => {
+                                    setSearchQuery(text);
+
+                                    setTimeout(() => {
+                                        if (scrollRef.current && productsSectionY > 0) {
+                                            scrollRef.current.scrollTo({ y: productsSectionY, animated: true });
+                                        }
+                                    }, 300);
+                                }}
+                                style={{ flex: 1, color: "#d63384" }}
+                            />
+
+
                         </Pressable>
                         <Feather name="mic" size={24} color="#d63384" />
                     </View>
-
+                <ScrollView ref={scrollRef}>
                     {/* Địa chỉ */}
                     <Pressable
                         onPress={() => navigation.navigate("Address")}
@@ -310,17 +328,26 @@ const HomeScreen = () => {
 
                     {/* Sản phẩm */}
                     <Text style={styles.sectionTitle}>🌸 All Products 🌸</Text>
-                    <View style={styles.productContainer}>
+                    <View
+                        onLayout={(event) => setProductsSectionY(event.nativeEvent.layout.y)}
+                        style={styles.productContainer}
+                    >
+
                         {products
-                            .filter((item) =>
-                                selectedCategory
+                            .filter((item) => {
+                                const matchesCategory = selectedCategory
                                     ? item.category?.toLowerCase() === selectedCategory.toLowerCase()
-                                    : true
-                            )
+                                    : true;
+                                const matchesSearch = item.title
+                                    ?.toLowerCase()
+                                    .includes(searchQuery.toLowerCase());
+                                return matchesCategory && matchesSearch;
+                            })
                             .map((item, index) => (
                                 <ProductItem key={index} item={item} />
                             ))}
                     </View>
+
 
 
                 </ScrollView>

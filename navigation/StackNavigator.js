@@ -17,6 +17,7 @@ import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderScreen from "../screens/OrderScreen";
 import AdminManagement from "../screens/AdminManagement";
 import AccountScreen from "../screens/AccountScreen";
+import OrderDetailScreen from "../screens/OrderDetailScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -28,7 +29,7 @@ const StackNavigator = () => {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "#FFD6EC", 
+            backgroundColor: "#FFD6EC",
             borderTopWidth: 0,
             height: 65,
             shadowColor: "#FFB6C1",
@@ -105,6 +106,8 @@ const StackNavigator = () => {
         <Stack.Screen name="Order" component={OrderScreen} />
         <Stack.Screen name="AdminManagement" component={AdminManagement} />
         <Stack.Screen name="AccountScreen" component={AccountScreen} />
+        <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

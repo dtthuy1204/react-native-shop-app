@@ -13,8 +13,8 @@ import axios from "axios";
 import { UserType } from "../UserContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-//const BASE_URL = "http://192.168.1.204:3001";
-const BASE_URL = "http://192.168.137.1:3001";
+const BASE_URL = "http://192.168.1.204:3001";
+//const BASE_URL = "http://192.168.137.1:3001";
 const AddAddressScreen = () => {
   const navigation = useNavigation();
   const [addresses, setAddresses] = useState([]);

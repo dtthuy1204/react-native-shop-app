@@ -66,7 +66,6 @@ const ProductInfoScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {/* 🔍 Thanh tìm kiếm */}
         <View style={styles.searchBarContainer}>
           <Pressable style={styles.searchBar}>
             <Feather
@@ -145,12 +144,12 @@ const ProductInfoScreen = () => {
           <View style={styles.locationRow}>
             <Ionicons name="location" size={22} color="#d63384" />
             <Text style={styles.locationText}>
-              Product shipped directly from our official store 💝
+              Product shipped directly from our official store
             </Text>
           </View>
         </View>
 
-        <Text style={styles.inStock}>IN STOCK 💕</Text>
+        <Text style={styles.inStock}>IN STOCK </Text>
 
         <View style={styles.descriptionContainer}>
           <Text style={styles.descriptionTitle}>Product Description</Text>
@@ -169,12 +168,12 @@ const ProductInfoScreen = () => {
               addedToCart ? styles.textAdded : styles.textAdd,
             ]}
           >
-            {addedToCart ? "💗 Added to cart" : "Add to cart"}
+            {addedToCart ? " Added to cart" : "Add to cart"}
           </Text>
         </Pressable>
 
         <Pressable style={styles.buyNowButton}>
-          <Text style={styles.buyNowText}>Buy now 💝</Text>
+          <Text style={styles.buyNowText}>Buy now </Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

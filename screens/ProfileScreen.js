@@ -16,8 +16,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../UserContext";
 
-//const BASE_URL = "http://192.168.1.204:3001";
-const BASE_URL = "http://192.168.137.1:3001";
+const BASE_URL = "http://192.168.1.204:3001";
+//const BASE_URL = "http://192.168.137.1:3001";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -90,14 +90,12 @@ const ProfileScreen = () => {
             </View>
           </View>
 
-          {/* Welcome */}
           <Text style={styles.welcomeText}>
             {loadingUser
               ? "Loading..."
               : `Welcome, ${user?.name || "lovely user"} 💕`}
           </Text>
 
-          {/* Admin */}
           {user?.email === "test@example.com" && (
             <Pressable
               onPress={() => navigation.navigate("AdminManagement")}
@@ -133,7 +131,7 @@ const ProfileScreen = () => {
             </Pressable>
           </View>
 
-          <Text style={styles.sectionTitle}>💖 Recent Orders</Text>
+          <Text style={styles.sectionTitle}>Recent Orders</Text>
 
           {loadingOrders ? (
             <ActivityIndicator
@@ -146,7 +144,12 @@ const ProfileScreen = () => {
               {orders.map((order) => {
                 const product = order.products[0];
                 return (
-                  <Pressable key={order._id} style={styles.orderCard}>
+                  <Pressable
+                    key={order._id}
+                    style={styles.orderCard}
+                    onPress={() => navigation.navigate("OrderDetail", { order })}
+                  >
+
                     <Image
                       source={{ uri: product?.image }}
                       style={styles.productImage}

@@ -16,14 +16,11 @@ import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserType } from "../UserContext";
 
-const BASE_URL = "http://192.168.137.1:3001";
-//const BASE_URL = "http://192.168.1.204:3001";
+const BASE_URL = "http://192.168.1.204:3001";
 
 const AccountScreen = () => {
   const { userId } = useContext(UserType);
   const [user, setUser] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [showReset, setShowReset] = useState(false);
   const [emailForReset, setEmailForReset] = useState("");
@@ -36,11 +33,6 @@ const AccountScreen = () => {
       try {
         const res = await axios.get(`${BASE_URL}/profile/${userId}`);
         setUser(res.data.user);
-        setFormData({
-          name: res.data.user.name,
-          email: res.data.user.email,
-          password: "",
-        });
       } catch (error) {
         console.log("Error fetching user:", error);
       } finally {
@@ -49,20 +41,6 @@ const AccountScreen = () => {
     };
     if (userId) fetchUser();
   }, [userId]);
-
-  const handleSave = async () => {
-    try {
-      await axios.put(`${BASE_URL}/profile/${userId}`, {
-        name: formData.name,
-      });
-      Alert.alert("✅ Success", "Your information has been updated.");
-      setUser((prev) => ({ ...prev, name: formData.name }));
-      setIsEditing(false);
-    } catch (error) {
-      console.log("Error updating user:", error);
-      Alert.alert("❌ Error", "Failed to update your information.");
-    }
-  };
 
   const handleRequestOTP = async () => {
     try {
@@ -145,7 +123,7 @@ const AccountScreen = () => {
                   style={[styles.button, styles.saveBtn]}
                   onPress={handleRequestOTP}
                 >
-                  <Text style={styles.buttonText}> Send OTP</Text>
+                  <Text style={styles.buttonText}>Send OTP</Text>
                 </Pressable>
               ) : (
                 <>
@@ -167,7 +145,7 @@ const AccountScreen = () => {
                     style={[styles.button, styles.saveBtn]}
                     onPress={handleVerifyOTP}
                   >
-                    <Text style={styles.buttonText}> Confirm Reset</Text>
+                    <Text style={styles.buttonText}>Confirm Reset</Text>
                   </Pressable>
                 </>
               )}
@@ -183,42 +161,6 @@ const AccountScreen = () => {
                   Cancel
                 </Text>
               </Pressable>
-            </View>
-          ) : isEditing ? (
-            <View style={styles.formContainer}>
-              <Text style={styles.label}>User Name</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.name}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, name: text })
-                }
-                placeholder="Enter your name"
-              />
-
-              <Text style={styles.label}>Email (cannot change)</Text>
-              <TextInput
-                style={[styles.input, { backgroundColor: "#FCE4EC" }]}
-                value={formData.email}
-                editable={false}
-              />
-
-              <View style={styles.row}>
-                <Pressable
-                  style={[styles.button, styles.saveBtn]}
-                  onPress={handleSave}
-                >
-                  <Text style={styles.buttonText}> Save</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, styles.cancelBtn]}
-                  onPress={() => setIsEditing(false)}
-                >
-                  <Text style={[styles.buttonText, { color: "#fff" }]}>
-                    Cancel
-                  </Text>
-                </Pressable>
-              </View>
             </View>
           ) : (
             <View style={styles.infoBox}>
@@ -243,20 +185,13 @@ const AccountScreen = () => {
               )}
 
               <Pressable
-                style={[styles.button, styles.editBtn]}
-                onPress={() => setIsEditing(true)}
-              >
-                <Text style={styles.buttonText}> Edit Information</Text>
-              </Pressable>
-
-              <Pressable
                 style={[styles.button, styles.saveBtn, { marginTop: 10 }]}
                 onPress={() => {
                   setEmailForReset(user?.email);
                   setShowReset(true);
                 }}
               >
-                <Text style={styles.buttonText}> Reset Password</Text>
+                <Text style={styles.buttonText}>Reset Password</Text>
               </Pressable>
             </View>
           )}
@@ -360,20 +295,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#333",
   },
-  row: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 10,
-  },
   button: {
     flex: 1,
     padding: 14,
     borderRadius: 20,
     alignItems: "center",
-  },
-  editBtn: {
-    backgroundColor: "#FFD6EC",
-    marginTop: 15,
   },
   saveBtn: {
     backgroundColor: "#FFD6EC",
