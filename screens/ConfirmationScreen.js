@@ -6,9 +6,8 @@ import { Entypo, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { cleanCart } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
+import { BASE_URL } from "../config";
 
-const BASE_URL = "http://192.168.1.204:3001";
-//const BASE_URL = "http://192.168.137.1:3001";
 const ConfirmationScreen = () => {
   const steps = [
     { title: "Address", content: "Address Form" },

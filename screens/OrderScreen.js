@@ -9,7 +9,6 @@ const OrderScreen = () => {
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {
-    // Hiệu ứng mờ + phóng to khi vào màn hình
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -24,7 +23,6 @@ const OrderScreen = () => {
       }),
     ]).start();
 
-    // Tự động chuyển về Main sau 3s
     const timer = setTimeout(() => {
       navigation.replace("Main");
     }, 3000);

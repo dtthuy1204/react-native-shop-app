@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { jwtDecode } from "jwt-decode";
 import { UserType } from "../UserContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BASE_URL } from "../config";
 
 const AddressScreen = () => {
   const navigation = useNavigation();
@@ -64,10 +65,8 @@ const AddressScreen = () => {
         Alert.alert("Validation error", "Please fill in all required fields");
         return;
       }
-//const response = await axios.post("http://192.168.137.1:3001/addresses", {
-//const response = await axios.post("http://192.168.1.204:3001/addresses",{
       const address = { name, mobileNo, houseNo, street, landmark, postalCode };
-      const response = await axios.post("http://192.168.1.204:3001/addresses",{
+      const response = await axios.post(`${BASE_URL}/addresses`,{
         userId,
         address,
       });

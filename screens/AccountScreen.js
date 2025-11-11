@@ -15,8 +15,7 @@ import {
 import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserType } from "../UserContext";
-
-const BASE_URL = "http://192.168.1.204:3001";
+import { BASE_URL } from "../config";
 
 const AccountScreen = () => {
   const { userId } = useContext(UserType);
